@@ -105,6 +105,7 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
     For example, the ARM_SCORE_SAMPLE_IN_LOW is set to 160 * ARM_TICKS_PER_DEGREE. This asks the arm to move 160° from the starting position.
     If you'd like it to move further, increase that number. If you'd like it to not move as far from the starting position, decrease it.
      */
+
     final double ARM_COLLAPSED_INTO_ROBOT  = 0;
     final double ARM_COLLECT               = 250 * ARM_TICKS_PER_DEGREE;
     final double ARM_CLEAR_BARRIER         = 230 * ARM_TICKS_PER_DEGREE;
