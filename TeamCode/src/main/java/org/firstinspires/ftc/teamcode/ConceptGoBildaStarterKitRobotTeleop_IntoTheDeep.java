@@ -105,25 +105,26 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
     For example, the ARM_SCORE_SAMPLE_IN_LOW is set to 160 * ARM_TICKS_PER_DEGREE. This asks the arm to move 160° from the starting position.
     If you'd like it to move further, increase that number. If you'd like it to not move as far from the starting position, decrease it.
      */
-    static double ARM_COLLAPSED_INTO_ROBOT  = 0;
-    static double ARM_COLLECT               = 250 * ARM_TICKS_PER_DEGREE;
-    static double ARM_CLEAR_BARRIER         = 230 * ARM_TICKS_PER_DEGREE;
-    static double ARM_SCORE_SPECIMEN        = 160 * ARM_TICKS_PER_DEGREE;
-    static double ARM_SCORE_SAMPLE_IN_LOW   = 160 * ARM_TICKS_PER_DEGREE;
-    static double ARM_ATTACH_HANGING_HOOK   = 120 * ARM_TICKS_PER_DEGREE;
-    static double ARM_WINCH_ROBOT           = 15  * ARM_TICKS_PER_DEGREE;
+
+    final double ARM_COLLAPSED_INTO_ROBOT  = 0;
+    final double ARM_COLLECT               = 250 * ARM_TICKS_PER_DEGREE;
+    final double ARM_CLEAR_BARRIER         = 230 * ARM_TICKS_PER_DEGREE;
+    final double ARM_SCORE_SPECIMEN        = 160 * ARM_TICKS_PER_DEGREE;
+    final double ARM_SCORE_SAMPLE_IN_LOW   = 160 * ARM_TICKS_PER_DEGREE;
+    final double ARM_ATTACH_HANGING_HOOK   = 120 * ARM_TICKS_PER_DEGREE;
+    final double ARM_WINCH_ROBOT           = 15  * ARM_TICKS_PER_DEGREE;
 
     /* Variables to store the speed the intake servo should be set at to intake, and deposit game elements. */
-    static double INTAKE_COLLECT    = -1.0;
-    static double INTAKE_OFF        =  0.0;
-    static double INTAKE_DEPOSIT    =  0.5;
+    final double INTAKE_COLLECT    = -1.0;
+    final double INTAKE_OFF        =  0.0;
+    final double INTAKE_DEPOSIT    =  0.5;
 
     /* Variables to store the positions that the wrist should be set to when folding in, or folding out. */
-    static double WRIST_FOLDED_IN   = 0.8333;
-    static double WRIST_FOLDED_OUT  = 0.5;
+    final double WRIST_FOLDED_IN   = 0.8333;
+    final double WRIST_FOLDED_OUT  = 0.5;
 
     /* A number in degrees that the triggers can adjust the arm position by */
-    static double FUDGE_FACTOR = 15 * ARM_TICKS_PER_DEGREE;
+    final double FUDGE_FACTOR = 15 * ARM_TICKS_PER_DEGREE;
 
     /* Variables that are used to set the arm to a specific position */
     double armPosition = (int)ARM_COLLAPSED_INTO_ROBOT;
@@ -224,7 +225,7 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
 
             /* Here we handle the three buttons that have direct control of the intake speed.
             These control the continuous rotation servo that pulls elements into the robot,
-            If the user presses A, it sets the intake power to the static variable that
+            If the user presses A, it sets the intake power to the final variable that
             holds the speed we want to collect at.
             If the user presses X, it sets the servo to Off.
             And if the user presses B it reveres the servo to spit out the element.
