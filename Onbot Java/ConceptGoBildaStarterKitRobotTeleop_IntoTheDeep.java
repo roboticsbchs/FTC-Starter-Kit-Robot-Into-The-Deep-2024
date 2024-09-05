@@ -241,7 +241,7 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
 
 
             /* Here we create a "fudge factor" for the arm position.
-            This allows you to adjust (or fudge) the arm position slightly with the gamepad triggers.
+            This allows you to adjust (or "fudge") the arm position slightly with the gamepad triggers.
             We want the left trigger to move the arm up, and right trigger to move the arm down.
             So we add the right trigger's variable to the inverse of the left trigger. If you pull
             both triggers an equal amount, they cancel and leave the arm at zero. But if one is larger
@@ -335,7 +335,7 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
             rounds it to the nearest whole number.
             */
 
-            /* Check to see if our arm is over the current limit, and tell report via telemetry. */
+            /* Check to see if our arm is over the current limit, and report via telemetry. */
             if (((DcMotorEx) armMotor).isOverCurrent()){
                 telemetry.addLine("MOTOR IS OVER CURRENT");
             }

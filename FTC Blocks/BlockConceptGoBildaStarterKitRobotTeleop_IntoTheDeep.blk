@@ -1,0 +1,1305 @@
+<xml xmlns="https://developers.google.com/blockly/xml">
+<variables>
+<variable id="G@xDyis*yjM/kl=1YX{9">ARM_TICKS_PER_DEGREE</variable>
+<variable id="=qeXk%@zloDrPGATBm(Z">ARM_COLLAPSED_INTO_ROBOT</variable>
+<variable id="`c@kTd3-OtZ)ib[*;IU9">ARM_COLLECT</variable>
+<variable id="o0UtX1,Gc[**Gv:2Mfy_">INTAKE_OFF</variable>
+<variable id="c-v*btLYSQe;e+ujF5tF">ARM_CLEAR_BARRIER</variable>
+<variable id="`7goWvv~{dv)/-o^GLah">WRIST_FOLDED_IN</variable>
+<variable id="JJ,sP!P6yKxQ3Mq6j`[3">ARM_SCORE_SPECIMEN</variable>
+<variable id="6%=fN50f)y7j1+H/0t[Z">ARM_SCORE_SAMPLE_IN_LOW</variable>
+<variable id=":m#2DoXo%l!1#eLD@+@w">ARM_ATTACH_HANGING_HOOK</variable>
+<variable id="2Ei$yoqjIEVbf8,v90hs">ARM_WINCH_ROBOT</variable>
+<variable id="64pbAf)dU|RJ-(`!~Kgz">INTAKE_COLLECT</variable>
+<variable id="yxc+qyP]*=X7N[C$L+w4">INTAKE_DEPOSIT</variable>
+<variable id="s;BPq/w(Pr@i%1s;dCO/">armPositionFudgeFactor</variable>
+<variable id="=X1gu3d?G1bW7T|SjRvM">FUDGE_FACTOR</variable>
+<variable id="JH)|.L^E7`9z`iwY/I*u">WRIST_FOLDED_OUT</variable>
+<variable id="1ND|7^cFYBU@T{#7KSPy">armPosition</variable>
+</variables>
+<block type="procedures_defnoreturn" id="OpN8!1beqW{8Bw6M/?m+" deletable="false" x="80" y="128">
+<field name="NAME">runOpMode</field>
+<comment pinned="true" h="697.44287109375" w="680.1448974609375"> * This OpMode is an example driver-controlled (TeleOp) mode for the goBILDA 2024-2025 FTC
+ * Into The Deep Starter Robot
+ * The code is structured as a LinearOpMode
+ *
+ * This robot has a two-motor differential-steered (sometimes called tank or skid steer) drivetrain.
+ * With a left and right drive motor.
+ * The drive on this robot is controlled in an "Arcade" style, with the left stick Y axis
+ * controlling the forward movement and the right stick X axis controlling rotation.
+ * This allows easy transition to a standard "First Person" control of a
+ * mecanum or omnidirectional chassis.
+ *
+ * The drive wheels are 96mm diameter traction (Rhino) or omni wheels.
+ * They are driven by 2x 5203-2402-0019 312RPM Yellow Jacket Planetary Gearmotors.
+ *
+ * This robot's main scoring mechanism includes an arm powered by a motor, a "wrist" driven
+ * by a servo, and an intake driven by a continuous rotation servo.
+ *
+ * The arm is powered by a 5203-2402-0051 (50.9:1 Yellow Jacket Planetary Gearmotor) with an
+ * external 5:1 reduction. This creates a total ~254.47:1 reduction.
+ * This OpMode uses the motor's encoder and the RunToPosition method to drive the arm to
+ * specific setpoints. These are defined as a number of degrees of rotation away from the arm's
+ * starting position.
+ *
+ * Make super sure that the arm is reset into the robot, and the wrist is folded in before
+ * you run start the OpMode. The motor's encoder is "relative" and will move the number of degrees
+ * you request it to based on the starting position. So if it starts too high, all the motor
+ * setpoints will be wrong.
+ *
+ * The wrist is powered by a goBILDA Torque Servo (2000-0025-0002).
+ *
+ * The intake wheels are powered by a goBILDA Speed Servo (2000-0025-0003) in Continuous Rotation mode.</comment>
+<data>{"commentPositionLeft":-287,"commentPositionTop":-739}</data>
+<statement name="STACK">
+<block type="procedures_callnoreturn" id="??dt7$stoZ7B;_QPuDhe">
+<mutation name="SetDefaultPositions"/>
+<comment pinned="true" h="94.51220703125" w="194.60614013671875">A function to create and set the target positions for different scoring positions.</comment>
+<data>{"commentPositionLeft":-303,"commentPositionTop":-71}</data>
+<next>
+<block type="procedures_callnoreturn" id="%Jox%a,fxDjD)sBK[NSn">
+<mutation name="SetMotorSettings"/>
+<comment pinned="true" h="76.56015014648438" w="196.11843872070312">A function to set the default settings for the drive and arm motors</comment>
+<data>{"commentPositionLeft":-303,"commentPositionTop":1}</data>
+<next>
+<block type="comment" id="G/[Ea+m8qt`_;2w*Y]X2">
+<field name="COMMENT">Make sure that the intake is off, and the wrist is folded in.</field>
+<next>
+<block type="crServo_setProperty_Number" id="N{y|+[e^ks7[T7ket4]h">
+<field name="IDENTIFIER">intakeAsCRServo</field>
+<field name="PROP">Power</field>
+<data>{"IDENTIFIER":"intake"}</data>
+<value name="VALUE">
+<shadow type="math_number" id="nNIe3e=IttZP.5z=yaBF">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="lck+Pb/0xB_Oc/3@EmL7">
+<field name="VAR" id="o0UtX1,Gc[**Gv:2Mfy_">INTAKE_OFF</field>
+</block>
+</value>
+<next>
+<block type="servo_setProperty_Number" id="xEzJVZa[7Ss2s?Zjt~%L">
+<field name="IDENTIFIER">wristAsServo</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"wrist"}</data>
+<value name="VALUE">
+<shadow type="math_number" id="kH8K5am8:(Pbh2oCf(Uf">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="c~un%$:zQ@JigGPaBXif">
+<field name="VAR" id="`7goWvv~{dv)/-o^GLah">WRIST_FOLDED_IN</field>
+</block>
+</value>
+<next>
+<block type="linearOpMode_waitForStart" id=":K8^U;yjvZn8aWa~t|#1">
+<next>
+<block type="controls_if" id="V4vcz1^;$q.ACQvg4=Rg">
+<value name="IF0">
+<block type="linearOpMode_opModeIsActive" id="oU;fZnTXMMPG@9M!vA8m"/>
+</value>
+<statement name="DO0">
+<block type="controls_whileUntil" id=";?u-rJ#FN3IEUo%rzP0!">
+<field name="MODE">WHILE</field>
+<value name="BOOL">
+<block type="linearOpMode_opModeIsActive" id="-(|WoGbw`fofYl;9=5+0"/>
+</value>
+<statement name="DO">
+<block type="comment" id="WVIu],wx7tVc)(nzL?kV">
+<field name="COMMENT">Set the drive and turn variables to follow the joysticks on the gamepad.</field>
+<next>
+<block type="dcMotor_setDualProperty_Number" id="huJ?c:G/n2FDBG.+f;^s">
+<field name="PROP">Power</field>
+<field name="IDENTIFIER1">left_front_driveAsDcMotor</field>
+<field name="IDENTIFIER2">right_front_driveAsDcMotor</field>
+<comment pinned="true" h="127.28884887695312" w="579.3977661132812">Here we "mix" the input channels together to find the power to apply to each motor.
+The both motors need to be set to a mix of how much you're retesting the robot move
+forward, and how much you're requesting the robot turn. When you ask the robot to rotate
+the right and left motors need to move in opposite directions. So we will add rotate to
+forward for the left motor, and subtract rotate from forward for the right motor.</comment>
+<data>{"IDENTIFIER1":"left_front_drive","IDENTIFIER2":"right_front_drive","commentPositionLeft":-759,"commentPositionTop":-120}</data>
+<value name="VALUE1">
+<shadow type="math_number" id="_@`28,V=4y$[h*t_i`cY">
+<field name="NUM">0</field>
+</shadow>
+<block type="math_arithmetic" id="1i+-u7]%}KaD{tav)9T`">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="@O;Eq2TLbrY#^!rDv1Z?">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_single" id="pX6^^V-=WZCs/Co/W3Uj">
+<field name="OP">NEG</field>
+<value name="NUM">
+<shadow type="math_number" id="aSy:@d:4c7sliIobtys;">
+<field name="NUM">9</field>
+</shadow>
+<block type="gamepad_getProperty_Number" id="[SI%8ATy)i}B3$I#ID)H">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftStickY</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="Cno[Te#lxa0~SPSk$nJr">
+<field name="NUM">1</field>
+</shadow>
+<block type="gamepad_getProperty_Number" id="faxIw0vzLPv:ume0i%i{">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">RightStickX</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+</block>
+</value>
+<value name="VALUE2">
+<shadow type="math_number" id="/v|5I,Li4x1^v4Rywd(M">
+<field name="NUM">0</field>
+</shadow>
+<block type="math_arithmetic" id="]U_CFtrV*D4t]utML]1g">
+<field name="OP">MINUS</field>
+<value name="A">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_single" id="fwfS3bP/n=HtB.b[3%|G">
+<field name="OP">NEG</field>
+<value name="NUM">
+<shadow type="math_number">
+<field name="NUM">9</field>
+</shadow>
+<block type="gamepad_getProperty_Number" id="42(^m$J[nkF5rn*8b=Xn">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftStickY</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="gamepad_getProperty_Number" id="$%`ssV86_Xe9(Ys0.F22">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">RightStickX</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="naZ*T8/2tm}ltOgl{Jf(">
+<field name="COMMENT">Set the Intake speed based on which button on the gamepad was pressed</field>
+<next>
+<block type="controls_if" id="{I2ycjP1%+x(6z7,Zo#f">
+<mutation else="1"/>
+<comment pinned="true" h="286.5204315185547" w="545.1326904296875">Here we handle the three buttons that have direct control of the intake speed.
+These control the continuous rotation servo that pulls elements into the robot,
+If the user presses A, it sets the intake power to the final variable that
+holds the speed we want to collect at.
+If the user presses X, it sets the servo to Off.
+And if the user presses B it reveres the servo to spit out the element.
+
+            TECH TIP: If else loops:
+We're using an else if loop on "gamepad1.x" and "gamepad1.b" just in case
+multiple buttons are pressed at the same time. If the driver presses both "a" and "x"
+at the same time. "a" will win over and the intake will turn on. If we just had
+three if statements, then it will set the intake servo's power to multiple speeds in
+one cycle. Which can cause strange behavior.</comment>
+<data>{"commentPositionLeft":-750,"commentPositionTop":-112}</data>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="sGyOcC}j[|/~XB~)f%G!">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">A</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="crServo_setProperty_Number" id="|,Z%]qtXB?H+l+5~?I-I">
+<field name="IDENTIFIER">intakeAsCRServo</field>
+<field name="PROP">Power</field>
+<data>{"IDENTIFIER":"intake"}</data>
+<value name="VALUE">
+<shadow type="math_number" id="A1yQX_V]:Cfj8XjDGoXT">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id=":?BAS@E}Srvy!{.:DH?{">
+<field name="VAR" id="64pbAf)dU|RJ-(`!~Kgz">INTAKE_COLLECT</field>
+</block>
+</value>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="controls_if" id="8||PmKA8-KxR5Y_k~P?T">
+<mutation else="1"/>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="G-`=|_l`sZCHWyGnWFRa">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">X</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="crServo_setProperty_Number" id="uTEdu?jvi{i`jm[9SgAZ">
+<field name="IDENTIFIER">intakeAsCRServo</field>
+<field name="PROP">Power</field>
+<data>{"IDENTIFIER":"intake"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="3FE3#9-5%7Ru*kXP@Ep;">
+<field name="VAR" id="o0UtX1,Gc[**Gv:2Mfy_">INTAKE_OFF</field>
+</block>
+</value>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="controls_if" id="1w@f-cD;ptG6^g5/D}~w">
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id=";$VQd8`#Ek({]TC?#Rz4">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">B</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="crServo_setProperty_Number" id="5g@TIgfoXLmVIh(6*rvh">
+<field name="IDENTIFIER">intakeAsCRServo</field>
+<field name="PROP">Power</field>
+<data>{"IDENTIFIER":"intake"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="B|q,+SVZ_ANzPJI0rT@1">
+<field name="VAR" id="yxc+qyP]*=X7N[C$L+w4">INTAKE_DEPOSIT</field>
+</block>
+</value>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+</statement>
+<next>
+<block type="comment" id="vmrKfN~@B`4nk^:/A9be">
+<field name="COMMENT">Create Arm Fudge Factor, which lets us adjust the position of our deposit slightly with the triggers</field>
+<next>
+<block type="variables_set" id=";87I{f,J}hhgxk[w9H_.">
+<field name="VAR" id="s;BPq/w(Pr@i%1s;dCO/">armPositionFudgeFactor</field>
+<comment pinned="true" h="168.18978881835938" w="626.62451171875">Here we create a "fudge factor" for the arm position.
+This allows you to adjust (or "fudge") the arm position slightly with the gamepad triggers.
+We want the left trigger to move the arm up, and right trigger to move the arm down.
+So we add the right trigger's variable to the inverse of the left trigger. If you pull
+both triggers an equal amount, they cancel and leave the arm at zero. But if one is larger
+than the other, it "wins out". This variable is then multiplied by our FUDGE_FACTOR.
+The FUDGE_FACTOR is the number of degrees that we can adjust the arm by with this function.</comment>
+<data>{"commentPositionLeft":-802,"commentPositionTop":-64}</data>
+<value name="VALUE">
+<block type="math_arithmetic" id="%@cKo|.Lblb3IQSofDU5">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="P,oSBPkvF`YtqJ_xBE~l">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="?#,WLZ}EYtspP_[X_8-n">
+<field name="VAR" id="=X1gu3d?G1bW7T|SjRvM">FUDGE_FACTOR</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="8.Tiwr!sz|#~*dcl9c^B">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_arithmetic" id="SS~=Sz]/P2%}M;gEOY@X">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="QbxAu]c,.0-9nI|h1E_2">
+<field name="NUM">1</field>
+</shadow>
+<block type="gamepad_getProperty_Number" id="M35x^v6b(+`5mUl2}lC+">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">RightTrigger</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="5}Y%Y_K.qn)?:/`COwK:">
+<field name="NUM">1</field>
+</shadow>
+<block type="math_single" id="@z7;wklsB[EiS!Yj@T,T">
+<field name="OP">NEG</field>
+<value name="NUM">
+<shadow type="math_number" id="UHx/IS/;A!vQN}ex*Q1o">
+<field name="NUM">9</field>
+</shadow>
+<block type="gamepad_getProperty_Number" id=";d5IKuXf1bF1QjK##k-]">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftTrigger</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="WQJNzrN=4niV@I_^*-!T">
+<field name="COMMENT">Set the arm position, wrist position, and intake state based on buttons pressed by the driver</field>
+<next>
+<block type="controls_if" id="Qy#P7{_^DKOxwT.fRnl}">
+<mutation else="1"/>
+<comment pinned="true" h="148.095947265625" w="578.62255859375">Here we implement a set of if else loops to set our arm to different scoring positions.
+We check to see if a specific button is pressed, and then move the arm (and sometimes
+intake and wrist) to match. For example, if we click the right bumper we want the robot
+to start collecting. So it moves the armPosition to the ARM_COLLECT position,
+it folds out the wrist to make sure it is in the correct orientation to intake, and it
+turns the intake on to the COLLECT mode.</comment>
+<data>{"commentPositionLeft":-778,"commentPositionTop":35}</data>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="G%lWxuv~{pEYkA4pZ@=A">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">RightBumper</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="Jfg%G`q7T__^W9+(!FOw">
+<field name="COMMENT">This is the intaking/collecting arm position</field>
+<next>
+<block type="variables_set" id="YGh]G]2j!%sUvFEeQt!n">
+<field name="VAR" id="1ND|7^cFYBU@T{#7KSPy">armPosition</field>
+<value name="VALUE">
+<block type="variables_get" id="6/I_I%zn9H^A*eV/7x9#">
+<field name="VAR" id="`c@kTd3-OtZ)ib[*;IU9">ARM_COLLECT</field>
+</block>
+</value>
+<next>
+<block type="servo_setProperty_Number" id="4mpzCuX|k`}mkt=ZDYBk">
+<field name="IDENTIFIER">wristAsServo</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"wrist"}</data>
+<value name="VALUE">
+<shadow type="math_number" id="jjv4T=jG/D]_E:,!%1?A">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="#x%fXqFHaRL`sv8wHqIt">
+<field name="VAR" id="JH)|.L^E7`9z`iwY/I*u">WRIST_FOLDED_OUT</field>
+</block>
+</value>
+<next>
+<block type="crServo_setProperty_Number" id="oo?1Q!W,siES=[@W4XK9">
+<field name="IDENTIFIER">intakeAsCRServo</field>
+<field name="PROP">Power</field>
+<data>{"IDENTIFIER":"intake"}</data>
+<value name="VALUE">
+<shadow type="math_number" id="?AZ(:g})/tm.`2-XAybt">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="6,ym?d{z@-02.Hsc3-WC">
+<field name="VAR" id="64pbAf)dU|RJ-(`!~Kgz">INTAKE_COLLECT</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="controls_if" id="RU(wjQq+})^_1.r?r^Ch">
+<mutation else="1"/>
+<comment pinned="true" h="81.1163330078125" w="480.3856201171875">Note here that we don't set the wrist position or the intake power when we
+select this "mode", this means that the intake and wrist will continue what
+they were doing before we clicked left bumper.</comment>
+<data>{"commentPositionLeft":-722,"commentPositionTop":50}</data>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="DD|;WP[#MJ}0HlN%5j*y">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">LeftBumper</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="!pU:@0RqN`$=^y.iL=_,">
+<field name="COMMENT">This is about 20° up from the collecting position to clear the barrier</field>
+<next>
+<block type="variables_set" id="eEg38#ov0`N;Rr=d0]h~">
+<field name="VAR" id="1ND|7^cFYBU@T{#7KSPy">armPosition</field>
+<value name="VALUE">
+<block type="variables_get" id="zi6(WiQM3*{k;fdqlr/2">
+<field name="VAR" id="c-v*btLYSQe;e+ujF5tF">ARM_CLEAR_BARRIER</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="controls_if" id="+R{bExYiE=ft_{j*Psq*">
+<mutation else="1"/>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="h[G--UoD.3Yr/T*=,~e9">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">Y</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="3;bD0.~-rwbc{)lx{#xu">
+<field name="COMMENT">This is the correct height to score the sample in the LOW BASKET</field>
+<next>
+<block type="variables_set" id="=j2T?@Uxf2RRZg5;MlF*">
+<field name="VAR" id="1ND|7^cFYBU@T{#7KSPy">armPosition</field>
+<value name="VALUE">
+<block type="variables_get" id="E0SoA(7EAA3Gix(-Cx=)">
+<field name="VAR" id="6%=fN50f)y7j1+H/0t[Z">ARM_SCORE_SAMPLE_IN_LOW</field>
+</block>
+</value>
+<next>
+<block type="servo_setProperty_Number" id=")UQ;D99eoJyDqt%cV~~O">
+<field name="IDENTIFIER">wristAsServo</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"wrist"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="{[u5Q`eGQW9D_MUExcyt">
+<field name="VAR" id="JH)|.L^E7`9z`iwY/I*u">WRIST_FOLDED_OUT</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="controls_if" id="a]l5UX*C#Yf`Y6608YvK">
+<mutation else="1"/>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id=",D%/y^!9,g9xB4ZmqcG-">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">DpadLeft</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="yrc;,+IsE?9+^4Q)k]$r">
+<field name="COMMENT">This turns off the intake, folds in the wrist, and moves the arm back to folded inside the robot</field>
+<next>
+<block type="variables_set" id="sMjn5T:OfeJYVR5up{$T">
+<field name="VAR" id="1ND|7^cFYBU@T{#7KSPy">armPosition</field>
+<value name="VALUE">
+<block type="variables_get" id="vVXFre9t)*t`M8i[`jE~">
+<field name="VAR" id="=qeXk%@zloDrPGATBm(Z">ARM_COLLAPSED_INTO_ROBOT</field>
+</block>
+</value>
+<next>
+<block type="servo_setProperty_Number" id="-t^vOO_TFnIu9d/uGl-@">
+<field name="IDENTIFIER">wristAsServo</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"wrist"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="+j:L7iJyi}fM+38wQ2l1">
+<field name="VAR" id="`7goWvv~{dv)/-o^GLah">WRIST_FOLDED_IN</field>
+</block>
+</value>
+<next>
+<block type="crServo_setProperty_Number" id="#Q832O1{3`!%DNlVFKfh">
+<field name="IDENTIFIER">intakeAsCRServo</field>
+<field name="PROP">Power</field>
+<data>{"IDENTIFIER":"intake"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="w@c]8-g;Au)JNivqEW%H">
+<field name="VAR" id="o0UtX1,Gc[**Gv:2Mfy_">INTAKE_OFF</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="controls_if" id="f~~LS2bdqfIT!|d)XfZ~">
+<mutation else="1"/>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="A2DGHy()gx}7Uhy6t%1?">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">DpadRight</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="KRnu-9r|f$$2qn=CicDF">
+<field name="COMMENT">This is the correct height to score SPECIMEN on the HIGH CHAMBER</field>
+<next>
+<block type="variables_set" id="#J3S:MHsk]/xBaR6wk6W">
+<field name="VAR" id="1ND|7^cFYBU@T{#7KSPy">armPosition</field>
+<value name="VALUE">
+<block type="variables_get" id="BC]E*Yv(:aYRuu#8VL4J">
+<field name="VAR" id="JJ,sP!P6yKxQ3Mq6j`[3">ARM_SCORE_SPECIMEN</field>
+</block>
+</value>
+<next>
+<block type="servo_setProperty_Number" id="7J}S{sDyx|uwI$.xT!i9">
+<field name="IDENTIFIER">wristAsServo</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"wrist"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="C|`CuC;Y%AL2Y`SU1!^V">
+<field name="VAR" id="`7goWvv~{dv)/-o^GLah">WRIST_FOLDED_IN</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="controls_if" id="hD/,Yu?z8nW--%e!h{:U">
+<mutation else="1"/>
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="xJ(|upLtpDYamH#29?Q8">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">DpadUp</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="P[]uC+H0j~Kq`0HSpKA!">
+<field name="COMMENT">This sets the arm to vertical to hook onto the LOW RUNG for hanging</field>
+<next>
+<block type="variables_set" id="ouj9P$gVIpsK^uJ`rzzB">
+<field name="VAR" id="1ND|7^cFYBU@T{#7KSPy">armPosition</field>
+<value name="VALUE">
+<block type="variables_get" id="HWv-n2Bo(fnDtNzgF(7V">
+<field name="VAR" id=":m#2DoXo%l!1#eLD@+@w">ARM_ATTACH_HANGING_HOOK</field>
+</block>
+</value>
+<next>
+<block type="servo_setProperty_Number" id=";J2y9g2aJ{5EGg%_nyC8">
+<field name="IDENTIFIER">wristAsServo</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"wrist"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="!F{FF86[CM2dh:|MqX`e">
+<field name="VAR" id="`7goWvv~{dv)/-o^GLah">WRIST_FOLDED_IN</field>
+</block>
+</value>
+<next>
+<block type="crServo_setProperty_Number" id=";P4oiue_}vs{/[o:v)a^">
+<field name="IDENTIFIER">intakeAsCRServo</field>
+<field name="PROP">Power</field>
+<data>{"IDENTIFIER":"intake"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="PRFs}|;/]2OC~c~*K(}I">
+<field name="VAR" id="o0UtX1,Gc[**Gv:2Mfy_">INTAKE_OFF</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+<statement name="ELSE">
+<block type="controls_if" id="28%XR5R;[eYq-4,f=ERW">
+<value name="IF0">
+<block type="gamepad_getProperty_Boolean" id="85MQm88)d4NMp%+,$8:=">
+<field name="IDENTIFIER">gamepad1</field>
+<field name="PROP">DpadDown</field>
+<data>{"IDENTIFIER":"gamepad1"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="comment" id="s5n=w-itqwq(aXVv.RF~">
+<field name="COMMENT">this moves the arm down to lift the robot up once it has been hooked</field>
+<next>
+<block type="variables_set" id="377C@8+uSwHr3I9elXjZ">
+<field name="VAR" id="1ND|7^cFYBU@T{#7KSPy">armPosition</field>
+<value name="VALUE">
+<block type="variables_get" id="7l6X.PCN/w!voFojLpWL">
+<field name="VAR" id="2Ei$yoqjIEVbf8,v90hs">ARM_WINCH_ROBOT</field>
+</block>
+</value>
+<next>
+<block type="servo_setProperty_Number" id="=SYc%Re%PPy8j6nLIH!+">
+<field name="IDENTIFIER">wristAsServo</field>
+<field name="PROP">Position</field>
+<data>{"IDENTIFIER":"wrist"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">0</field>
+</shadow>
+<block type="variables_get" id="=O`,Tl*(?i%[+R?L7@pf">
+<field name="VAR" id="`7goWvv~{dv)/-o^GLah">WRIST_FOLDED_IN</field>
+</block>
+</value>
+<next>
+<block type="crServo_setProperty_Number" id="s?lw_n*2+}~g]Py0i(tA">
+<field name="IDENTIFIER">intakeAsCRServo</field>
+<field name="PROP">Power</field>
+<data>{"IDENTIFIER":"intake"}</data>
+<value name="VALUE">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="^gjkdd[2r4/fe.BeKM.}">
+<field name="VAR" id="o0UtX1,Gc[**Gv:2Mfy_">INTAKE_OFF</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+</statement>
+<next>
+<block type="comment" id="#,P*6(Su!(|3LOy@6My/">
+<field name="COMMENT">Set the target postiion of the arm based on the last variable selected by the driver</field>
+<next>
+<block type="dcMotor_setProperty_Number" id="]e]4|`-gGp3X3rMDK2q*">
+<field name="IDENTIFIER">left_armAsDcMotor</field>
+<field name="PROP">TargetPosition</field>
+<data>{"IDENTIFIER":"left_arm"}</data>
+<value name="VALUE">
+<shadow type="math_number" id="gv60,W|)v(_~}EL*w4qT">
+<field name="NUM">0</field>
+</shadow>
+<block type="math_round" id="]G~^q,m)6cj`Ri8)1o]q">
+<field name="OP">ROUND</field>
+<value name="NUM">
+<shadow type="math_number" id="`v_BPyoH[z]b)TpZKo4q">
+<field name="NUM">3.1</field>
+</shadow>
+<block type="math_arithmetic" id="6~D4QMC4hDTW52wJOW@Q">
+<field name="OP">ADD</field>
+<value name="A">
+<shadow type="math_number" id="H-Z9Bb2xQCyne008en[r">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="+~g1c{Q1anPF?g)XG,dO">
+<field name="VAR" id="1ND|7^cFYBU@T{#7KSPy">armPosition</field>
+</block>
+</value>
+<value name="B">
+<shadow type="math_number" id="n@vS/C[:*$nXVHwa(@_y">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id=")[zz%U+E[%-sY8h7+LWK">
+<field name="VAR" id="s;BPq/w(Pr@i%1s;dCO/">armPositionFudgeFactor</field>
+</block>
+</value>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="dcMotor_setProperty_RunMode" id="@UnxT*:@aZ==b+npSoDZ">
+<field name="IDENTIFIER">left_armAsDcMotor</field>
+<field name="PROP">Mode</field>
+<data>{"IDENTIFIER":"left_arm"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_runMode" id="nUg1_{jA.WQ?|rr(Rjgp">
+<field name="RUN_MODE">RUN_TO_POSITION</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setProperty_Number" id="Q`68CK@EM1H0AAA^IS-W">
+<field name="IDENTIFIER">left_armAsDcMotor</field>
+<field name="PROP">Velocity</field>
+<comment pinned="true" h="60.96044921875" w="550.4662475585938">Here we set the target velocity (speed) the motor runs at. This is in ticks-per-second.
+This is a little under the maximum of 2800.</comment>
+<data>{"IDENTIFIER":"left_arm","commentPositionLeft":-672,"commentPositionTop":-34}</data>
+<value name="VALUE">
+<shadow type="math_number" id="5A$Y`o3^{*,6_i4gI4,g">
+<field name="NUM">2100</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="nb{$(%p`-P2o7Xh_XJ*6">
+<field name="COMMENT">Check to see if the arm motor is over the current limit and report via telemetry.</field>
+<next>
+<block type="controls_if" id="}f#Xk9GXJ/Fk5|Hjo9^y">
+<value name="IF0">
+<block type="dcMotor_isOverCurrent" id="8;0DHtqqRyK0^vM1gtds">
+<field name="IDENTIFIER">left_armAsDcMotor</field>
+<data>{"IDENTIFIER":"left_arm"}</data>
+</block>
+</value>
+<statement name="DO0">
+<block type="telemetry_addLine" id="*?@Jyl[u5^/.$,~lhskD">
+<value name="TEXT">
+<shadow type="text" id="[|+vwAv:!gc^r-@*fF/m">
+<field name="TEXT">MOTOR IS OVER CURRENT</field>
+</shadow>
+</value>
+</block>
+</statement>
+<next>
+<block type="telemetry_addNumericData_Number" id=":nI7-9OL2Hc_09}s$|9l">
+<value name="KEY">
+<shadow type="text" id="*oSCJW}fI)nEOW)zU3.J">
+<field name="TEXT">Arm Target Position:</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow type="math_number" id="dprwm35L|A,o.c$W0fa.">
+<field name="NUM">123</field>
+</shadow>
+<block type="variables_get" id="5e:ZrgBP%^f?%kPQ#~%:">
+<field name="VAR" id="1ND|7^cFYBU@T{#7KSPy">armPosition</field>
+</block>
+</value>
+<next>
+<block type="telemetry_addNumericData_Number" id="r.mxKbIX;$hVk5A}SJA2">
+<value name="KEY">
+<shadow type="text" id="ipYX-(Uf}CPw[gc1)l#,">
+<field name="TEXT">Arm Current Position:</field>
+</shadow>
+</value>
+<value name="NUMBER">
+<shadow type="math_number" id="ektY,=R/9+7sRwt[=hE9">
+<field name="NUM">123</field>
+</shadow>
+<block type="dcMotor_getProperty_Number" id="_!wFI4Xv17KwThdDwcR7">
+<field name="IDENTIFIER">left_armAsDcMotor</field>
+<field name="PROP">CurrentPosition</field>
+<data>{"IDENTIFIER":"left_arm"}</data>
+</block>
+</value>
+<next>
+<block type="telemetry_update" id="@gYi7skc}L4N4*Fz;RZ!"/>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</statement>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id="x{s9qrgwqyr-K2Sz|XIi" x="1318" y="168">
+<field name="NAME">SetDefaultPositions</field>
+<comment pinned="true" h="72.43550872802734" w="311.322998046875">This function defines the arm target positions, wrist target positions, and intake speeds.</comment>
+<data>{"commentPositionLeft":-140,"commentPositionTop":-138}</data>
+<statement name="STACK">
+<block type="variables_set" id="1-}t8s,LyB)Tm?~yU~sV">
+<field name="VAR" id="G@xDyis*yjM/kl=1YX{9">ARM_TICKS_PER_DEGREE</field>
+<comment pinned="false" h="210.8333282470703" w="647.5">This constant is the number of encoder ticks for each degree of rotation of the arm.
+    To find this, we first need to consider the total gear reduction powering our arm.
+    First, we have an external 20t:100t (5:1) reduction created by two spur gears.
+    But we also have an internal gear reduction in our motor.
+    The motor we use for this arm is a 117RPM Yellow Jacket. Which has an internal gear
+    reduction of ~50.9:1. (more precisely it is 250047/4913:1)
+    We can multiply these two ratios together to get our final reduction of ~254.47:1.
+    The motor's encoder counts 28 times per rotation. So in total you should see about 7125.16
+    counts per rotation of the arm. We divide that by 360 to get the counts per degree.</comment>
+<data>{"commentPositionLeft":-749,"commentPositionTop":-153}</data>
+<value name="VALUE">
+<block type="math_number" id="~F*0xM}ki!@MgDVHQG=7">
+<field name="NUM">19.7924893140647</field>
+</block>
+</value>
+<next>
+<block type="comment" id="0QirCqJ%Z$Y27P[ud]~#">
+<field name="COMMENT">Define Arm Setpoints in Degrees, multiplied by ARM_TICKS_PER_DEGREE</field>
+<next>
+<block type="variables_set" id="m!^{i.f1DE|zc~CQvvg}">
+<field name="VAR" id="=qeXk%@zloDrPGATBm(Z">ARM_COLLAPSED_INTO_ROBOT</field>
+<comment pinned="false" h="253.03062438964844" w="643.3694458007812">These constants hold the position that the arm is commanded to run to.
+    These are relative to where the arm was located when you start the OpMode. So make sure the
+    arm is reset to collapsed inside the robot before you start the program.
+
+    In these variables you'll see a number in degrees, multiplied by the ticks per degree of the arm.
+    This results in the number of encoder ticks the arm needs to move in order to achieve the ideal
+    set position of the arm. For example, the ARM_SCORE_SAMPLE_IN_LOW is set to
+    160 * ARM_TICKS_PER_DEGREE. This asks the arm to move 160° from the starting position.
+    If you'd like it to move further, increase that number. If you'd like it to not move
+    as far from the starting position, decrease it.</comment>
+<data>{"commentPositionLeft":-730,"commentPositionTop":-140}</data>
+<value name="VALUE">
+<block type="math_number" id="]11%M;_)RKpjx@-/?[xy">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="J`21FUiC%T;i*gKy#Xvo">
+<field name="VAR" id="`c@kTd3-OtZ)ib[*;IU9">ARM_COLLECT</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="/EJSN;1i,^7+VGwnmXKH">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="}B42W@c_TBT1[s^74@!P">
+<field name="NUM">250</field>
+</shadow>
+</value>
+<value name="B">
+<shadow type="math_number" id="%oD8j6X@zoPyn)fX*Su2">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="3K2:1kK4C`+wi~^%`F9#">
+<field name="VAR" id="G@xDyis*yjM/kl=1YX{9">ARM_TICKS_PER_DEGREE</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="i*i*!@jGkb91Wbyz~F0v">
+<field name="VAR" id="c-v*btLYSQe;e+ujF5tF">ARM_CLEAR_BARRIER</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="_NaGC#h(O.Ymep)+`@g=">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="[a_/:q0CzM-HP,p/]G8x">
+<field name="NUM">230</field>
+</shadow>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="O^(Q?[4X6)t9Wh.tePkH">
+<field name="VAR" id="G@xDyis*yjM/kl=1YX{9">ARM_TICKS_PER_DEGREE</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="7[521]4!?8,iM##0~L2b">
+<field name="VAR" id="JJ,sP!P6yKxQ3Mq6j`[3">ARM_SCORE_SPECIMEN</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="B~x!SBRa;iV]O=`OMq2A">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="8%K+/b2k%c!1e~oJg2WQ">
+<field name="NUM">160</field>
+</shadow>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id=".wi-L}QQrX1NtvlryGo+">
+<field name="VAR" id="G@xDyis*yjM/kl=1YX{9">ARM_TICKS_PER_DEGREE</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="lw5,a/5=$VUQDN5WAoIF">
+<field name="VAR" id="6%=fN50f)y7j1+H/0t[Z">ARM_SCORE_SAMPLE_IN_LOW</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="n:|K/Mq@ps(G^|8cKn-L">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="j3q|iUr{)#*.M=Icti!Q">
+<field name="NUM">160</field>
+</shadow>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="NJw@QERFBP%@4EnfL^j0">
+<field name="VAR" id="G@xDyis*yjM/kl=1YX{9">ARM_TICKS_PER_DEGREE</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id=",,X1EhqcwMc`Hxj9]RyA">
+<field name="VAR" id=":m#2DoXo%l!1#eLD@+@w">ARM_ATTACH_HANGING_HOOK</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="A7hSGFfs}yUh2JJBDG9I">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id=".fLkzaJcsz,b1gvOvuhs">
+<field name="NUM">120</field>
+</shadow>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="NdNlsq)U0Lh|gmUquEV!">
+<field name="VAR" id="G@xDyis*yjM/kl=1YX{9">ARM_TICKS_PER_DEGREE</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="variables_set" id="g*%Xb4Fy|NzsJ8CEAVrF">
+<field name="VAR" id="2Ei$yoqjIEVbf8,v90hs">ARM_WINCH_ROBOT</field>
+<value name="VALUE">
+<block type="math_arithmetic" id=",u!u0d8~%23[I~63En9V">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="D,oiT+E4ZuHz~hgngikR">
+<field name="NUM">15</field>
+</shadow>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="c8tDi/_ZdO_SMq1}GX(1">
+<field name="VAR" id="G@xDyis*yjM/kl=1YX{9">ARM_TICKS_PER_DEGREE</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="?BzV:v38i:;Thj=bF72z">
+<field name="COMMENT">Variables to store the speed the intake servo should be set at to intake, and deposit game elements. </field>
+<next>
+<block type="variables_set" id="E=*=z1ez*-ZqP}PRCkw.">
+<field name="VAR" id="64pbAf)dU|RJ-(`!~Kgz">INTAKE_COLLECT</field>
+<value name="VALUE">
+<block type="math_number" id="T016/UA,4G!mKnzu1RHm">
+<field name="NUM">-1</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="DMj{O(Qv8J7ZvpZSh}M(">
+<field name="VAR" id="o0UtX1,Gc[**Gv:2Mfy_">INTAKE_OFF</field>
+<value name="VALUE">
+<block type="math_number" id="aRYe[88!5^`CAQS?55km">
+<field name="NUM">0</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="X%=]v;zliXc3*l9b}3vS">
+<field name="VAR" id="yxc+qyP]*=X7N[C$L+w4">INTAKE_DEPOSIT</field>
+<value name="VALUE">
+<block type="math_number" id="AOch7EGNnV*K.yGFjJSV">
+<field name="NUM">0.5</field>
+</block>
+</value>
+<next>
+<block type="comment" id="G,Ql)OTdc15~y~EUe2=9">
+<field name="COMMENT">Variables to store the positions that the wrist should be set to when folding in, or folding out.</field>
+<next>
+<block type="variables_set" id="B).t@2PXIO3@^[E#Gy.G">
+<field name="VAR" id="`7goWvv~{dv)/-o^GLah">WRIST_FOLDED_IN</field>
+<value name="VALUE">
+<block type="math_number" id="`ADMR~=+Q$j%1(fKpv$4">
+<field name="NUM">0.8333</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="7pk)R%o,FlOcbA4Du{gD">
+<field name="VAR" id="JH)|.L^E7`9z`iwY/I*u">WRIST_FOLDED_OUT</field>
+<value name="VALUE">
+<block type="math_number" id="3WLcy|r`%Ka)(PGDD_B#">
+<field name="NUM">0.5</field>
+</block>
+</value>
+<next>
+<block type="variables_set" id="GZSVE?V$W8q1(]G0JV+s">
+<field name="VAR" id="JH)|.L^E7`9z`iwY/I*u">WRIST_FOLDED_OUT</field>
+<value name="VALUE">
+<block type="math_number" id="WwqkLLkj{@tu$MwH3.2c">
+<field name="NUM">0.5</field>
+</block>
+</value>
+<next>
+<block type="comment" id="v8$QFo26Ak6X}w9G6.z9">
+<field name="COMMENT">A number in degrees that the triggers can adjust the arm position by</field>
+<next>
+<block type="variables_set" id="W=}siY~l?C5nALIJ+_58">
+<field name="VAR" id="=X1gu3d?G1bW7T|SjRvM">FUDGE_FACTOR</field>
+<value name="VALUE">
+<block type="math_arithmetic" id="Xj5xeN5tzrf6O:YZSJ0n">
+<field name="OP">MULTIPLY</field>
+<value name="A">
+<shadow type="math_number" id="Dp||WmNwYexBU_7n+4,{">
+<field name="NUM">15</field>
+</shadow>
+</value>
+<value name="B">
+<shadow type="math_number">
+<field name="NUM">1</field>
+</shadow>
+<block type="variables_get" id="%RUe#Ex8LNu[wYEVDklk">
+<field name="VAR" id="G@xDyis*yjM/kl=1YX{9">ARM_TICKS_PER_DEGREE</field>
+</block>
+</value>
+</block>
+</value>
+<next>
+<block type="comment" id="g7hRNw/{5I(EuS8{fIFp">
+<field name="COMMENT">Variables that are used to set the arm to a specific position</field>
+<next>
+<block type="variables_set" id="gdc6),}#1PJ{T^/y:{;o">
+<field name="VAR" id="1ND|7^cFYBU@T{#7KSPy">armPosition</field>
+<value name="VALUE">
+<block type="math_number" id=".}EGPmEh0$Jzx7GV,/]G">
+<field name="NUM">0</field>
+</block>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+<block type="procedures_defnoreturn" id=")Am([e#:S/m0#:LmEZFk" x="1320" y="1016">
+<field name="NAME">SetMotorSettings</field>
+<comment pinned="true" h="49.901275634765625" w="266.635498046875">Sets all the motor settings at once</comment>
+<data>{"commentPositionLeft":-123,"commentPositionTop":-91}</data>
+<statement name="STACK">
+<block type="comment" id=".mwacbd]v0XwRe1r+Ox`">
+<field name="COMMENT">Most skid-steer/differential drive robots require reversing one motor to drive forward.</field>
+<next>
+<block type="dcMotor_setProperty_Direction" id="J9mWp-`+QE@Mq!IY1}DE">
+<field name="IDENTIFIER">left_front_driveAsDcMotor</field>
+<field name="PROP">Direction</field>
+<data>{"IDENTIFIER":"left_front_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_direction" id="P$=!y/OkIINfiw!5PW-Y">
+<field name="DIRECTION">FORWARD</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setProperty_Direction" id="]vrRYzk~{@_LOwe_v#@I">
+<field name="IDENTIFIER">right_front_driveAsDcMotor</field>
+<field name="PROP">Direction</field>
+<data>{"IDENTIFIER":"right_front_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_direction" id="ecCw.vq*m|Mg/Q1t.$HE">
+<field name="DIRECTION">REVERSE</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id=":l|L-U:p+}fRV2[Fq(W$">
+<field name="COMMENT">Setting zeroPowerBehavior to BRAKE enables a "brake mode".</field>
+<next>
+<block type="dcMotor_setProperty_ZeroPowerBehavior" id="umY{XRoL:o2!A$p@{#DC">
+<field name="IDENTIFIER">left_armAsDcMotor</field>
+<field name="PROP">ZeroPowerBehavior</field>
+<data>{"IDENTIFIER":"left_arm"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_zeroPowerBehavior" id="+_U[z*w{|zk/02NYefZZ">
+<field name="ZERO_POWER_BEHAVIOR">BRAKE</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setProperty_ZeroPowerBehavior" id="@UqTu7P~.7LpER}~$D^?">
+<field name="IDENTIFIER">left_front_driveAsDcMotor</field>
+<field name="PROP">ZeroPowerBehavior</field>
+<data>{"IDENTIFIER":"left_front_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_zeroPowerBehavior" id="OqaX-mptYJc.)vcIm-zE">
+<field name="ZERO_POWER_BEHAVIOR">BRAKE</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setProperty_ZeroPowerBehavior" id="s)BQE_U|e4RD/8=#QFcA">
+<field name="IDENTIFIER">right_front_driveAsDcMotor</field>
+<field name="PROP">ZeroPowerBehavior</field>
+<data>{"IDENTIFIER":"right_front_drive"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_zeroPowerBehavior" id="TU4W_:4J0sA51fad-Q3u">
+<field name="ZERO_POWER_BEHAVIOR">BRAKE</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setCurrentAlert" id="Cka?,.}Y5%aD#heyCdUf">
+<field name="IDENTIFIER">left_armAsDcMotor</field>
+<data>{"IDENTIFIER":"left_arm"}</data>
+<value name="CURRENT">
+<shadow type="math_number" id="f(31*6+tz}v{:+R~n:;E">
+<field name="NUM">5</field>
+</shadow>
+</value>
+<value name="CURRENT_UNIT">
+<shadow type="navigation_typedEnum_currentUnit" id="dyN$CJU$trox7~a{[g@@">
+<field name="CURRENT_UNIT">AMPS</field>
+</shadow>
+</value>
+<next>
+<block type="comment" id="W9IlDuOCVo2hQU~kUfG^">
+<field name="COMMENT">Set the arm motor to runToPosition mode</field>
+<next>
+<block type="dcMotor_setProperty_Number" id="[W:]PLy3JX9JEy,6{6{8">
+<field name="IDENTIFIER">left_armAsDcMotor</field>
+<field name="PROP">TargetPosition</field>
+<data>{"IDENTIFIER":"left_arm"}</data>
+<value name="VALUE">
+<shadow type="math_number" id="4k-}6UW4m;$xCw-V9uTP">
+<field name="NUM">0</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setProperty_RunMode" id="KKWSx#uqd[2-m6dSJumJ">
+<field name="IDENTIFIER">left_armAsDcMotor</field>
+<field name="PROP">Mode</field>
+<data>{"IDENTIFIER":"left_arm"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_runMode" id="o.hrd:aOjc[T^#SD4F.1">
+<field name="RUN_MODE">RUN_TO_POSITION</field>
+</shadow>
+</value>
+<next>
+<block type="dcMotor_setProperty_RunMode" id="E6rgOp;Nu]HL+.IigT0c">
+<field name="IDENTIFIER">left_armAsDcMotor</field>
+<field name="PROP">Mode</field>
+<data>{"IDENTIFIER":"left_arm"}</data>
+<value name="VALUE">
+<shadow type="dcMotor_typedEnum_runMode" id="I:sUjs/nmhbv1bMFut9}">
+<field name="RUN_MODE">STOP_AND_RESET_ENCODER</field>
+</shadow>
+</value>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</next>
+</block>
+</statement>
+</block>
+</xml>
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Extra>
+<OpModeMeta flavor="TELEOP" group="" autoTransition="" />
+<Enabled value="true" />
+</Extra>
