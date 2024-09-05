@@ -1,30 +1,23 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
+/*   MIT License
+ *   Copyright (c) [2024] [Base 10 Assets, LLC]
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *   Permission is hereby granted, free of charge, to any person obtaining a copy
+ *   of this software and associated documentation files (the "Software"), to deal
+ *   in the Software without restriction, including without limitation the rights
+ *   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *   copies of the Software, and to permit persons to whom the Software is
+ *   furnished to do so, subject to the following conditions:
+
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *   SOFTWARE.
  */
 
 package org.firstinspires.ftc.teamcode;
@@ -39,8 +32,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 /*
- * This OpMode is an example driver-controlled (TeleOp) mode for the goBILDA
- * 2024-2025 FTC Into The Deep Starter Robot
+ * This OpMode is an example driver-controlled (TeleOp) mode for the goBILDA 2024-2025 FTC
+ * Into The Deep Starter Robot
  * The code is structured as a LinearOpMode
  *
  * This robot has a two-motor differential-steered (sometimes called tank or skid steer) drivetrain.
@@ -85,26 +78,28 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
     public Servo    wrist       = null; //the wrist servo
 
 
-    /*
-    This constant is the number of encoder ticks for each degree of rotation of the arm.
-    To find this, we first need to consider the total gear reduction powering our arm. First, we have an external
-    20t:100t (5:1) reduction created by two spur gears. But we also have an internal gear reduction in our motor.
-    The motor we use for this arm is a 117RPM Yellow Jacket. Which has an internal gear reduction of ~50.9:1. (exactly it's 250047/4913:1)
-    We can multiply these two ratios together to get our final reduction of ~254.47:1. The motor's encoder counts 28 times per rotation.
-    So in total you should see about 7125.16 counts per rotation of the arm. We divide that by 360 to get the counts per degree.
-     */
+    /* This constant is the number of encoder ticks for each degree of rotation of the arm.
+    To find this, we first need to consider the total gear reduction powering our arm.
+    First, we have an external 20t:100t (5:1) reduction created by two spur gears.
+    But we also have an internal gear reduction in our motor.
+    The motor we use for this arm is a 117RPM Yellow Jacket. Which has an internal gear
+    reduction of ~50.9:1. (more precisely it is 250047/4913:1)
+    We can multiply these two ratios together to get our final reduction of ~254.47:1.
+    The motor's encoder counts 28 times per rotation. So in total you should see about 7125.16
+    counts per rotation of the arm. We divide that by 360 to get the counts per degree. */
     static double ARM_TICKS_PER_DEGREE = 19.7924893140647; //exact fraction is (194481/9826)
 
-    /*
-    These constants hold the position that the arm is commanded to run to.
-    These are relative to where the arm was located when you start the OpMode. So make sure the arm is reset to
-    collapsed inside the robot before you start the program.
+
+    /* These constants hold the position that the arm is commanded to run to.
+    These are relative to where the arm was located when you start the OpMode. So make sure the
+    arm is reset to collapsed inside the robot before you start the program.
 
     In these variables you'll see a number in degrees, multiplied by the ticks per degree of the arm.
-    This results in the number of encoder ticks the arm needs to move in order to achieve the ideal set position of the arm.
-    For example, the ARM_SCORE_SAMPLE_IN_LOW is set to 160 * ARM_TICKS_PER_DEGREE. This asks the arm to move 160° from the starting position.
-    If you'd like it to move further, increase that number. If you'd like it to not move as far from the starting position, decrease it.
-     */
+    This results in the number of encoder ticks the arm needs to move in order to achieve the ideal
+    set position of the arm. For example, the ARM_SCORE_SAMPLE_IN_LOW is set to
+    160 * ARM_TICKS_PER_DEGREE. This asks the arm to move 160° from the starting position.
+    If you'd like it to move further, increase that number. If you'd like it to not move
+    as far from the starting position, decrease it. */
 
     final double ARM_COLLAPSED_INTO_ROBOT  = 0;
     final double ARM_COLLECT               = 250 * ARM_TICKS_PER_DEGREE;
@@ -134,7 +129,7 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
     @Override
     public void runOpMode() {
         /*
-        These variables are private to the function, and are used to control the drivetrain.
+        These variables are private to the OpMode, and are used to control the drivetrain.
          */
         double left;
         double right;
@@ -157,8 +152,7 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
 
         /* Setting zeroPowerBehavior to BRAKE enables a "brake mode". This causes the motor to slow down
         much faster when it is coasting. This creates a much more controllable drivetrain. As the robot
-        stops much quicker.
-         */
+        stops much quicker. */
         leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         armMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -169,8 +163,7 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
 
         /* Before starting the armMotor. We'll make sure the TargetPosition is set to 0.
         Then we'll set the RunMode to RUN_TO_POSITION. And we'll ask it to stop and reset encoder.
-        If you do not have the encoder plugged into this motor, it will not run in this code.
-         */
+        If you do not have the encoder plugged into this motor, it will not run in this code. */
         armMotor.setTargetPosition(0);
         armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -228,9 +221,10 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
             If the user presses A, it sets the intake power to the final variable that
             holds the speed we want to collect at.
             If the user presses X, it sets the servo to Off.
-            And if the user presses B it reveres the servo to spit out the element.
+            And if the user presses B it reveres the servo to spit out the element.*/
 
-            NOTE: We're using an else if loop on "gamepad1.x" and "gamepad1.b" just in case
+            /* TECH TIP: If Else loops:
+            We're using an else if loop on "gamepad1.x" and "gamepad1.b" just in case
             multiple buttons are pressed at the same time. If the driver presses both "a" and "x"
             at the same time. "a" will win over and the intake will turn on. If we just had
             three if statements, then it will set the intake servo's power to multiple speeds in
