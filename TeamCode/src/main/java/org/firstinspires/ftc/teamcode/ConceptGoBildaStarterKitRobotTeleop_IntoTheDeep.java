@@ -87,7 +87,7 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
     We can multiply these two ratios together to get our final reduction of ~254.47:1.
     The motor's encoder counts 28 times per rotation. So in total you should see about 7125.16
     counts per rotation of the arm. We divide that by 360 to get the counts per degree. */
-    static double ARM_TICKS_PER_DEGREE = 19.7924893140647; //exact fraction is (194481/9826)
+    final double ARM_TICKS_PER_DEGREE = 19.7924893140647; //exact fraction is (194481/9826)
 
 
     /* These constants hold the position that the arm is commanded to run to.
@@ -139,9 +139,9 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
 
 
         /* Define and Initialize Motors */
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_front_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
-        armMotor   = hardwareMap.get(DcMotor.class, "left_arm");
+        leftDrive  = hardwareMap.get(DcMotor.class, "left_front_drive"); //the left drivetrain motor
+        rightDrive = hardwareMap.get(DcMotor.class, "right_front_drive"); //the right drivetrain motor
+        armMotor   = hardwareMap.get(DcMotor.class, "left_arm"); //the arm motor
 
 
         /* Most skid-steer/differential drive robots require reversing one motor to drive forward.
@@ -170,8 +170,8 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
 
 
         /* Define and initialize servos.*/
-        intake  = hardwareMap.get(CRServo.class, "intake");
-        wrist = hardwareMap.get(Servo.class, "wrist");
+        intake = hardwareMap.get(CRServo.class, "intake");
+        wrist  = hardwareMap.get(Servo.class, "wrist");
 
         /* Make sure that the intake is off, and the wrist is folded in. */
         intake.setPower(INTAKE_OFF);
@@ -230,14 +230,15 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
             three if statements, then it will set the intake servo's power to multiple speeds in
             one cycle. Which can cause strange behavior. */
 
-            if (gamepad1.a)
+            if (gamepad1.a) {
                 intake.setPower(INTAKE_COLLECT);
-
-                else if (gamepad1.x)
-                    intake.setPower(INTAKE_OFF);
-
-                else if (gamepad1.b)
-                    intake.setPower(INTAKE_DEPOSIT);
+            }
+            else if (gamepad1.x) {
+                intake.setPower(INTAKE_OFF);
+            }
+            else if (gamepad1.b) {
+                intake.setPower(INTAKE_DEPOSIT);
+            }
 
 
             /* Here we create a "fudge factor" for the arm position.
@@ -310,7 +311,7 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
             /* Here we set the target position of our arm to match the variable that was selected
             by the driver.
             We also set the target velocity (speed) the motor runs at, and use setMode to run it.*/
-            armMotor.setTargetPosition((int)(armPosition+armPositionFudgeFactor));
+            armMotor.setTargetPosition((int) (armPosition  +armPositionFudgeFactor));
 
             ((DcMotorEx) armMotor).setVelocity(2100);
             armMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -337,7 +338,7 @@ public class ConceptGoBildaStarterKitRobotTeleop_IntoTheDeep extends LinearOpMod
 
             /* Check to see if our arm is over the current limit, and report via telemetry. */
             if (((DcMotorEx) armMotor).isOverCurrent()){
-                telemetry.addLine("MOTOR IS OVER CURRENT");
+                telemetry.addLine("MOTOR EXCEEDED CURRENT LIMIT!");
             }
 
 
