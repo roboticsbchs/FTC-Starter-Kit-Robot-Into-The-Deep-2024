@@ -13,7 +13,7 @@ Go to this folder: [FTC Starter Kit Robot Java Teleop](https://github.com/goBILD
 Download the file, and import it to your robot.
 
 ## Blocks: 
-The Blocks example code for this robot can be found here:
+The Blocks example code for this robot can be found here: https://github.com/goBILDA-Official/FTC-Starter-Kit-Robot-Into-The-Deep-Blocks-Example
 
 
 ## NOTICE
