@@ -1,4 +1,6 @@
-# Starter Kit Robot Example Code
+# Please discontinue use, this repo will be made private as it is tied to the old version of the FTC SDK. Please use: https://github.com/goBILDA-Official/FtcRobotController-Add-Starter-Kit-Code
+
+## Starter Kit Robot Example Code
 Example Code for the Starter Robot built out of the [goBILDA Starter Kit]([url](https://www.gobilda.com/ftc-starter-kit-2024-2025-season/)) for the 2024-2025 FIRST Tech Challenge INTO THE DEEP season. <br><br>
 It includes options for Android Studio, and Onbot Java (using the same Java file in teamCode).
 (note, Onbot Java and Android Studio code is identical)
