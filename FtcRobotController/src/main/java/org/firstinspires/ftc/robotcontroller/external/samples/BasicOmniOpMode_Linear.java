@@ -74,6 +74,21 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
     private DcMotor rightFrontDrive = null;
     private DcMotor rightBackDrive = null;
 
+    // Setting instance variable for your arm motors: tilt and slide. Added by Pinnacle.
+    private DcMotor tiltMotor;
+    private DcMotor slideMotor;
+
+
+    // Values for arm power and encoder motion. Added by Pinnacle.
+    private int tiltStartPosition = 0;
+    private int slideStartPosition = 0;
+    private int armTicks = 120;
+    private double tiltPower = 1;
+    private int slideTicks = 120;
+    private double slidePower = 1;
+
+
+
     @Override
     public void runOpMode() {
 
@@ -83,6 +98,11 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         leftBackDrive  = hardwareMap.get(DcMotor.class, "left_rear_drive");  // Hub 2
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive"); // Hub 1
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_rear_drive");  // Hub 3
+
+        /* As of writing this code, the motors are plugged in and configured. */
+        /* Feel free to change as needed to match your desired config. - Added by Pinnacle */
+        tiltMotor = hardwareMap.get(DcMotor.class, "tilt_motor"); // Exp Hub 1
+        slideMotor = hardwareMap.get(DcMotor.class, "slide_motor"); // Exp Hub 0
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -99,8 +119,24 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
+        // Sets the zero power behavior to resist gravity and inertia.
+        // Sets the motors to run using encoder values.
+        // Sets the motors to actively pursue positions defined by encoder ticks.
+        // Sets starting target position to avoid initialization errors.
+        // Added by Pinnacle.
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        tiltMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        tiltMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor.setTargetPosition(slideStartPosition);
+        tiltMotor.setTargetPosition(tiltStartPosition);
+        slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
+        telemetry.addData("Tilt Position: ", tiltMotor.getCurrentPosition()); // Get tilt and slide encoder values.
+        telemetry.addData("Slide Position: ", slideMotor.getCurrentPosition()); // Added by Pinnacle.
         telemetry.update();
 
         waitForStart();
@@ -158,10 +194,37 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             leftBackDrive.setPower(leftBackPower);
             rightBackDrive.setPower(rightBackPower);
 
+            // Sets power to the arm motors. Added by Pinnacle.
+            tiltMotor.setPower(tiltPower);
+            slideMotor.setPower(slidePower);
+
+            // Controls for your tilt motor. Added by Pinnacle.
+            if (gamepad1.dpad_down) { // 🔘 D-Pad Down
+                tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() + armTicks);
+            }
+            if (gamepad1.dpad_up) { // 🔘 D-Pad Up
+                tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() - armTicks);
+            }
+
+            // Controls for your slide motor. Added by Pinnacle.
+            if (gamepad1.dpad_right) { // 🔘 D-Pad Right
+                slideMotor.setTargetPosition(slideMotor.getCurrentPosition() + slideTicks);
+            }
+            if (gamepad1.dpad_left) { // 🔘 D-Pad Left
+                slideMotor.setTargetPosition(slideMotor.getCurrentPosition() - slideTicks);
+            }
+
+            if (gamepad1.a) {
+                slideMotor.setTargetPosition(slideMotor.getCurrentPosition());
+                tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition());
+            }
+
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("Tilt Position: ", tiltMotor.getCurrentPosition()); // Get tilt and slide encoder values.
+            telemetry.addData("Slide Position: ", slideMotor.getCurrentPosition()); // Added by Pinnacle.
             telemetry.update();
         }
     }}
