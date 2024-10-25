@@ -80,9 +80,9 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
         leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive"); // Hub 0
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_back_drive");  // Hub 2
+        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_rear_drive");  // Hub 2
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive"); // Hub 1
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back_drive");  // Hub 3
+        rightBackDrive = hardwareMap.get(DcMotor.class, "right_rear_drive");  // Hub 3
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -95,9 +95,9 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
         // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
