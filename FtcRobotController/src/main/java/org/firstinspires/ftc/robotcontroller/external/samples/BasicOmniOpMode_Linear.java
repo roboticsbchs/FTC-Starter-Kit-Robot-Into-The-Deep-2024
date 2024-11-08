@@ -32,7 +32,10 @@ package org.firstinspires.ftc.robotcontroller.external.samples;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
@@ -77,6 +80,8 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
     // Setting instance variable for your arm motors: tilt and slide. Added by Pinnacle.
     private DcMotor tiltMotor;
     private DcMotor slideMotor;
+    public CRServo intake_motor = null; //the active intake servo
+    public Servo wrist_motor = null; //the wrist servo
 
 
     // Values for arm power and encoder motion. Added by Pinnacle.
@@ -86,16 +91,19 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
     private double tiltPower = 1;
     private int slideTicks = 120;
     private double slidePower = 1;
-
-
+    final double INTAKE_COLLECT = -1.0;
+    final double INTAKE_OFF = 0.0;
+    final double INTAKE_DEPOSIT = 0.5;
+    final double WRIST_FOLDED_IN = 0.1667;
+    final double WRIST_FOLDED_OUT = 0.5;
 
     @Override
     public void runOpMode() {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        leftFrontDrive  = hardwareMap.get(DcMotor.class, "left_front_drive"); // Hub 0
-        leftBackDrive  = hardwareMap.get(DcMotor.class, "left_rear_drive");  // Hub 2
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive"); // Hub 0
+        leftBackDrive = hardwareMap.get(DcMotor.class, "left_rear_drive");  // Hub 2
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive"); // Hub 1
         rightBackDrive = hardwareMap.get(DcMotor.class, "right_rear_drive");  // Hub 3
 
@@ -103,6 +111,8 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         /* Feel free to change as needed to match your desired config. - Added by Pinnacle */
         tiltMotor = hardwareMap.get(DcMotor.class, "tilt_motor"); // Exp Hub 1
         slideMotor = hardwareMap.get(DcMotor.class, "slide_motor"); // Exp Hub 0
+        intake_motor = hardwareMap.get(CRServo.class, "intake_motor");// Servo 0
+        wrist_motor = hardwareMap.get(Servo.class, "wrist_motor");// Servo 1
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -132,11 +142,16 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         tiltMotor.setTargetPosition(tiltStartPosition);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
+        intake_motor = hardwareMap.get(CRServo.class, "intake");
+        wrist_motor = hardwareMap.get(Servo.class, "wrist");
+        intake_motor.setPower(INTAKE_OFF);
+        wrist_motor.setPosition(WRIST_FOLDED_OUT);
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
         telemetry.addData("Tilt Position: ", tiltMotor.getCurrentPosition()); // Get tilt and slide encoder values.
         telemetry.addData("Slide Position: ", slideMotor.getCurrentPosition()); // Added by Pinnacle.
+        telemetry.addData("Intake Position", intake_motor.getPower());
+        telemetry.addData("Wrist Position", wrist_motor.getPosition());
         telemetry.update();
 
         waitForStart();
@@ -147,16 +162,16 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             double max;
 
             // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral = gamepad1.left_stick_x;
+            double yaw = gamepad1.right_stick_x;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
+            double leftFrontPower = axial + lateral + yaw;
             double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
+            double leftBackPower = axial - lateral + yaw;
+            double rightBackPower = axial + lateral - yaw;
 
             // Normalize the values so no wheel power exceeds 100%
             // This ensures that the robot maintains the desired motion.
@@ -165,10 +180,10 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             max = Math.max(max, Math.abs(rightBackPower));
 
             if (max > 1.0) {
-                leftFrontPower  /= max;
+                leftFrontPower /= max;
                 rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
+                leftBackPower /= max;
+                rightBackPower /= max;
             }
 
             // This is test code:
@@ -197,34 +212,94 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             // Sets power to the arm motors. Added by Pinnacle.
             tiltMotor.setPower(tiltPower);
             slideMotor.setPower(slidePower);
-
+//Sets power to hand motors. Added by 11706
+            intake_motor.setPower(intake_motor.getPower());
+            wrist_motor.setPosition(wrist_motor.getPosition());
             // Controls for your tilt motor. Added by Pinnacle.
             if (gamepad1.dpad_down) { // 🔘 D-Pad Down
                 tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() + armTicks);
+                if (tiltMotor.getCurrentPosition() < -5870) {
+                    if (tiltMotor.getCurrentPosition() + armTicks > -5870) {
+                        tiltMotor.setTargetPosition(-5870);
+                    } else {
+                        tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() + armTicks);
+                    }
+                }
             }
             if (gamepad1.dpad_up) { // 🔘 D-Pad Up
                 tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() - armTicks);
+                if (tiltMotor.getCurrentPosition() < -1740) {
+                    if (tiltMotor.getCurrentPosition() + armTicks > -1740) {
+                        tiltMotor.setTargetPosition(-1740);
+                    } else {
+                        tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() + armTicks);
+                    }
+                }
             }
 
             // Controls for your slide motor. Added by Pinnacle.
             if (gamepad1.dpad_right) { // 🔘 D-Pad Right
                 slideMotor.setTargetPosition(slideMotor.getCurrentPosition() + slideTicks);
+                if (tiltMotor.getCurrentPosition() < -1303) {
+                    if (tiltMotor.getCurrentPosition() + slideTicks > -1303) {
+                        tiltMotor.setTargetPosition(-1303);
+                    } else {
+                        tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() + slideTicks);
+                    }
+                }
             }
+
             if (gamepad1.dpad_left) { // 🔘 D-Pad Left
                 slideMotor.setTargetPosition(slideMotor.getCurrentPosition() - slideTicks);
-            }
+                if (tiltMotor.getCurrentPosition() < 0) {
+                    if (tiltMotor.getCurrentPosition() + slideTicks > 0) {
+                        tiltMotor.setTargetPosition(0);
+                    } else {
+                        tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() + slideTicks);
+                    }
 
-            if (gamepad1.a) {
-                slideMotor.setTargetPosition(slideMotor.getCurrentPosition());
-                tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition());
-            }
+                    if (gamepad1.a) {
+                        slideMotor.setTargetPosition(slideMotor.getCurrentPosition());
+                        tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition());
+                    }
+                    if (gamepad1.left_bumper) {
+                        double intakeCollect = INTAKE_COLLECT;
+                    }
+                    if (gamepad1.right_bumper) {
+                        intake_motor.setPower(INTAKE_OFF);
+                    }
+                    if (gamepad1.y) {
+                       intake_motor.setPower(INTAKE_DEPOSIT);
+                        if (gamepad1.left_trigger > 0) {
+                            wrist_motor.setPosition(0);
+                            if (gamepad1.right_trigger > 0) {
+                                wrist_motor.setPosition(1);
+                            }
+                            if (gamepad1.b) {
+                              //  wrist.setPosition(0.5);
+                            }
+                        }
 
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("Tilt Position: ", tiltMotor.getCurrentPosition()); // Get tilt and slide encoder values.
-            telemetry.addData("Slide Position: ", slideMotor.getCurrentPosition()); // Added by Pinnacle.
-            telemetry.update();
+                        // Show the elapsed game time and wheel power.
+                        telemetry.addData("Status", "Run Time: " + runtime.toString());
+                        telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+                        telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+                        telemetry.addData("Tilt Position: ", tiltMotor.getCurrentPosition()); // Get tilt and slide encoder values.
+                        telemetry.addData("Slide Position: ", slideMotor.getCurrentPosition()); // Added by Pinnacle.
+                        telemetry.update();
+                    }
+                }
+            }
         }
-    }}
+    }
+}
+
+
+
+
+
+
+// max slide length = -1303
+// min slide limit = 0
+// max tilt limit = -5870
+// min tilt limit = -1740
