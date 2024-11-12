@@ -142,7 +142,7 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         tiltMotor.setTargetPosition(tiltStartPosition);
         slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         tiltMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-       // intake_motor = hardwareMap.get(CRServo.class, "intake");
+        // intake_motor = hardwareMap.get(CRServo.class, "intake");
         //wrist_motor = hardwareMap.get(Servo.class, "wrist");
         intake_motor.setPower(INTAKE_OFF);
         wrist_motor.setPosition(WRIST_FOLDED_OUT);
@@ -242,9 +242,8 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             if (gamepad1.dpad_right) { // 🔘 D-Pad Right
                 int current_slide_location = slideMotor.getCurrentPosition();
                 if (current_slide_location < -1303) {
-                    slideMotor.setTargetPosition(current_slide_location - slideTicks)
-                }
-                else {
+                    slideMotor.setTargetPosition(current_slide_location - slideTicks);
+                } else {
                     slideMotor.setTargetPosition(-1303);
                 }
 
@@ -253,48 +252,49 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             if (gamepad1.dpad_left) { // 🔘 D-Pad Left
                 int current_slide_location = slideMotor.getCurrentPosition();
                 if (current_slide_location < 0) {
-                    slideMotor.setTargetPosition(current_slide_location + slideTicks)
-                }
-                else {
+                    slideMotor.setTargetPosition(current_slide_location + slideTicks);
+                } else {
                     slideMotor.setTargetPosition(0);
                 }
-
+            }
 
             if (gamepad1.a) {
                 slideMotor.setTargetPosition(slideMotor.getCurrentPosition());
                 tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition());
             }
             if (gamepad1.left_bumper) {
-                double intakeCollect = INTAKE_COLLECT;
+                intake_motor.setPower(INTAKE_COLLECT);
             }
             if (gamepad1.right_bumper) {
                 intake_motor.setPower(INTAKE_OFF);
             }
             if (gamepad1.y) {
-               intake_motor.setPower(INTAKE_DEPOSIT);
-                if (gamepad1.left_trigger > 0.5) {
-                    wrist_motor.setPosition(0);
-                }
-                else {
-                    if (gamepad1.right_trigger > 0.5) {
-                        wrist_motor.setPosition(1);
-                    }
-                       else {
-                              wrist_motor.setPosition(0.5);
-                            }
-                }
-
-                // Show the elapsed game time and wheel power.
-                telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-                telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-                telemetry.addData("Tilt Position: ", tiltMotor.getCurrentPosition()); // Get tilt and slide encoder values.
-                telemetry.addData("Slide Position: ", slideMotor.getCurrentPosition()); // Added by Pinnacle.
-                telemetry.update();
+                intake_motor.setPower(INTAKE_DEPOSIT);
             }
+            if (gamepad1.left_trigger > 0.5) {
+                wrist_motor.setPosition(.2);
+            } else {
+                if (gamepad1.right_trigger > 0.5) {
+                    wrist_motor.setPosition(.8);
+                } else {
+                    wrist_motor.setPosition(0.5);
+                }
+            }
+
+            // Show the elapsed game time and wheel power.
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+            telemetry.addData("Tilt Position: ", tiltMotor.getCurrentPosition()); // Get tilt and slide encoder values.
+            telemetry.addData("Slide Position: ", slideMotor.getCurrentPosition()); // Added by Pinnacle.
+            telemetry.update();
+
+
         }
     }
 }
+
+
 
 
 
