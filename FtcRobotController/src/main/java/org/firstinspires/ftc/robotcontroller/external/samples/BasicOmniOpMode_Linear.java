@@ -135,6 +135,8 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
         // Sets starting target position to avoid initialization errors.
         // Added by Pinnacle.
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setDirection(DcMotor.Direction.REVERSE);
+        tiltMotor.setDirection(DcMotor.Direction.REVERSE);
         tiltMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         tiltMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -217,80 +219,86 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             wrist_motor.setPosition(wrist_motor.getPosition());
             // Controls for your tilt motor. Added by Pinnacle.
             if (gamepad1.dpad_down) { // 🔘 D-Pad Down
-                tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() + armTicks);
-                if (tiltMotor.getCurrentPosition() < -5870) {
-                    if (tiltMotor.getCurrentPosition() + armTicks > -5870) {
-                        tiltMotor.setTargetPosition(-5870);
-                    } else {
-                        tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() + armTicks);
-                    }
-                }
-            }
-            // going to control tilt
-            if (gamepad1.dpad_up) { // 🔘 D-Pad Up
-                tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() - armTicks);
-                if (tiltMotor.getCurrentPosition() < -1740) {
-                    if (tiltMotor.getCurrentPosition() + armTicks > -1740) {
-                        tiltMotor.setTargetPosition(-1740);
-                    } else {
-                        tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() + armTicks);
-                    }
-                }
-            }
-
-            // Modified by Jayla, extend the slide
-            if (gamepad1.dpad_right) { // 🔘 D-Pad Right
-                int current_slide_location = slideMotor.getCurrentPosition();
-                if (current_slide_location < -1303) {
-                    slideMotor.setTargetPosition(current_slide_location - slideTicks);
+                //tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() + armTicks);
+                // if (tiltMotor.getCurrentPosition() < 5870) {
+                if (tiltMotor.getCurrentPosition() + armTicks > 5870) {
+                    tiltMotor.setTargetPosition(5870);
                 } else {
-                    slideMotor.setTargetPosition(-1303);
+                    tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() + armTicks);
+                }
+                //   }
+//                else [
+//                    tiltMotor.setTargetPosition(5870);
+//                ]
+//            }
+                // going to control tilt
+                if (gamepad1.dpad_up) { // 🔘 D-Pad Up
+                    //tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() - armTicks);
+                    // if (tiltMotor.getCurrentPosition() > 1740) {
+                    if (tiltMotor.getCurrentPosition() - armTicks < 1740) {
+                        tiltMotor.setTargetPosition(1740);
+                    } else {
+                        tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition() - armTicks);
+                    }
+                    //  }
+
                 }
 
-            }
+                // Modified by Jayla, extend the slide
+                if (gamepad1.dpad_right) { // 🔘 D-Pad Right
+                    int current_slide_location = slideMotor.getCurrentPosition();
+                    if (current_slide_location < 1303) {
+                        slideMotor.setTargetPosition(current_slide_location + slideTicks);
+                    } else {
+                        slideMotor.setTargetPosition(1303);
+                    }
+
+                }
 // retracting the slide with left gamepad
-            if (gamepad1.dpad_left) { // 🔘 D-Pad Left
-                int current_slide_location = slideMotor.getCurrentPosition();
-                if (current_slide_location < 0) {
-                    slideMotor.setTargetPosition(current_slide_location + slideTicks);
-                } else {
-                    slideMotor.setTargetPosition(0);
+                if (gamepad1.dpad_left) { // 🔘 D-Pad Left
+                    int current_slide_location = slideMotor.getCurrentPosition();
+                    if (current_slide_location > 0) {
+                        slideMotor.setTargetPosition(current_slide_location - slideTicks);
+                    } else {
+                        slideMotor.setTargetPosition(0);
+                    }
                 }
-            }
 
-            if (gamepad1.a) {
-                slideMotor.setTargetPosition(slideMotor.getCurrentPosition());
-                tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition());
-            }
-            if (gamepad1.left_bumper) {
-                intake_motor.setPower(INTAKE_COLLECT);
-            }
-            if (gamepad1.right_bumper) {
-                intake_motor.setPower(INTAKE_OFF);
-            }
-            if (gamepad1.y) {
-                intake_motor.setPower(INTAKE_DEPOSIT);
-            }
-            if (gamepad1.left_trigger > 0.5) {
-                wrist_motor.setPosition(.2);
-            } else {
-                if (gamepad1.right_trigger > 0.5) {
-                    wrist_motor.setPosition(.8);
-                } else {
-                    wrist_motor.setPosition(0.5);
+                if (gamepad1.a) {
+                    slideMotor.setTargetPosition(slideMotor.getCurrentPosition());
+                    tiltMotor.setTargetPosition(tiltMotor.getCurrentPosition());
                 }
+                if (gamepad1.left_bumper) {
+                    intake_motor.setPower(INTAKE_COLLECT);
+                }
+                if (gamepad1.right_bumper) {
+                    intake_motor.setPower(INTAKE_OFF);
+                }
+                if (gamepad1.y) {
+                    intake_motor.setPower(INTAKE_DEPOSIT);
+                }
+                if (gamepad1.left_trigger > 0.5) {
+                    wrist_motor.setPosition(.2);
+                } else {
+                    if (gamepad1.right_trigger > 0.5) {
+                        wrist_motor.setPosition(.8);
+                    } else {
+                        wrist_motor.setPosition(0.5);
+                    }
+                }
+
+                // Show the elapsed game time and wheel power.
+                telemetry.addData("Status", "Run Time: " + runtime.toString());
+                telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+                telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+                telemetry.addData("Tilt Position: ", tiltMotor.getCurrentPosition()); // Get tilt and slide encoder values.
+                telemetry.addData("Slide Position: ", slideMotor.getCurrentPosition()); // Added by Pinnacle.
+                telemetry.update();
+
+
             }
-
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.addData("Tilt Position: ", tiltMotor.getCurrentPosition()); // Get tilt and slide encoder values.
-            telemetry.addData("Slide Position: ", slideMotor.getCurrentPosition()); // Added by Pinnacle.
-            telemetry.update();
-
-
         }
+
     }
 }
 
