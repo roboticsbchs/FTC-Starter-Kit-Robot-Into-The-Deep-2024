@@ -12,7 +12,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name="Bogi_TeleOp_One", group="Linear OpMode")
-public class Bogie_TeleOp_One extends LinearOpMode {
+@Disabled
+class Bogie_TeleOp_One extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
