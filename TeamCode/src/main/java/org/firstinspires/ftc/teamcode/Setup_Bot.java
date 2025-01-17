@@ -27,7 +27,7 @@ public class Setup_Bot extends LinearOpMode {
     private double clawOpen = 1;
     private double clawClose = 0;
     private int armTicks = 120;
-    private double tiltPower = 1;
+    private double tiltPower = .8;
     private int slideTicks = 120;
     private double slidePower = .8;
     private int tiltStartPosition = 0;
@@ -83,9 +83,9 @@ public class Setup_Bot extends LinearOpMode {
         clawServo = hardwareMap.get(Servo.class, "claw");
 
         // Initialize positions elbow wrist tilt slide
-        pickupPosition = new Position(0.75, 0.35, 500, 1275);
-        drivePosition = new Position(0.75, 0.35, 1500, 250);
-        scorePosition = new Position(1.0, 0.35, 5770, 2200);
+        pickupPosition = new Position(0.75, 0.9, 570, 1700);
+        drivePosition = new Position(0.75, 0.9, 1500, 250);
+        scorePosition = new Position(1.0, 0.35, 5000, 2000);
         startPosition = new Position(0, 0.65, 10, 10);
         // Wait for the game to start
         waitForStart();
@@ -330,6 +330,11 @@ public class Setup_Bot extends LinearOpMode {
             leftBackPower /= max;
             rightBackPower /= max;
         }
+
+        leftFrontPower *= 0.8;
+        rightFrontPower *= 0.8;
+        leftBackPower = leftBackPower * 0.8;
+        rightBackPower = rightBackPower * 0.8;
 
         // Send calculated power to wheels
         leftFrontDrive.setPower(leftFrontPower);
