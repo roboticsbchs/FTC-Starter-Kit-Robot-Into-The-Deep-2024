@@ -5,8 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+//Run this in terminal to do adb connect to robot
+// C:\Users\mydli\Documents\Robotics\FTC-Starter-Kit-Robot-Into-The-Deep-2024> adb.exe connect 192.168.43.1:5555
 
-@TeleOp(name = "Servo Adjuster with Telemetry", group = "TeleOp")
+
+        @TeleOp(name = "Servo Adjuster with Telemetry", group = "TeleOp")
 public class Setup_Bot extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -85,7 +88,7 @@ public class Setup_Bot extends LinearOpMode {
         // Initialize positions elbow wrist tilt slide
         pickupPosition = new Position(0.75, 0.9, 570, 1700);
         drivePosition = new Position(0.75, 0.9, 1500, 250);
-        scorePosition = new Position(1.0, 0.35, 5000, 2000);
+        scorePosition = new Position(0.5, 0.9, 4174, 2240);
         startPosition = new Position(0, 0.65, 10, 10);
         // Wait for the game to start
         waitForStart();
@@ -128,13 +131,12 @@ public class Setup_Bot extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            slide_tilt_manual_control();
             compute_omni();
 
             // Switch between Elbow, Wrist, and Claw when 'Y' is pressed
             if (gamepad1.y) {
                 currentState = RobotState.STEADY_STATE;
-                currentIndex = (currentIndex + 1) % 3; // Cycle through 0, 1, 2
+                currentIndex = (currentIndex + 1) % 2; // Cycle through 0, 1, 2
                 sleep(300); // Add debounce to avoid rapid cycli
             }
             //  state transitions based on gamepad input
@@ -163,6 +165,8 @@ public class Setup_Bot extends LinearOpMode {
                     slideMotor.setTargetPosition(pickupPosition.slide);
                     elbowServo.setPosition(pickupPosition.elbow);
                     wristServo.setPosition(pickupPosition.wrist);
+                    wrist = pickupPosition.wrist;
+                    elbow = pickupPosition.elbow;
                     break;
                 case DRIVE_POSITION:
                     tiltmotorA.setTargetPosition(drivePosition.tilt);
@@ -171,6 +175,8 @@ public class Setup_Bot extends LinearOpMode {
                     if (tiltmotorA.getCurrentPosition() > 1000){
                         elbowServo.setPosition(drivePosition.elbow);
                         wristServo.setPosition(drivePosition.wrist);
+                        wrist = drivePosition.wrist;
+                        elbow = drivePosition.elbow;
                         }
 
                     break;
@@ -188,6 +194,7 @@ public class Setup_Bot extends LinearOpMode {
 
                 case STEADY_STATE:
                     positioner();
+                    slide_tilt_manual_control();
                     break;
 
             }
@@ -233,22 +240,24 @@ public class Setup_Bot extends LinearOpMode {
                 }
                 wristServo.setPosition(wrist); // Update servo
                 break;
-            case 2: // Claw
-                if (gamepad1.left_bumper) {
-                    claw = Math.max(0, claw - INCREMENT);
-                    sleep(200); // Add debounce
-                }
-                else if (gamepad1.right_bumper) {
-                    claw = Math.min(1, claw + INCREMENT);
-                    sleep(200); // Add debounce
-                }
-                clawServo.setPosition(claw); // Update servo
-                break;
-        }
+//            case 2: // Claw
+//                if (gamepad1.left_bumper) {
+//                    claw = Math.max(0, claw - INCREMENT);
+//                    sleep(200); // Add debounce
+//                }
+//                else if (gamepad1.right_bumper) {
+//                    claw = Math.min(1, claw + INCREMENT);
+//                    sleep(200); // Add debounce
+//                }
+//                clawServo.setPosition(claw); // Update servo
+//                break;
+       }
     }
     private void updateArm(Position position) {
         elbowServo.setPosition(position.elbow);
         wristServo.setPosition(position.wrist);
+        wrist = position.wrist;
+        elbow = position.elbow;
         tiltmotorA.setTargetPosition(position.tilt);
         tiltmotorB.setTargetPosition(position.tilt);
         slideMotor.setTargetPosition(position.slide);
