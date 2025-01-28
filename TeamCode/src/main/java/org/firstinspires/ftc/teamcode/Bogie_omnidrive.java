@@ -131,7 +131,6 @@ public class Bogie_omnidrive  extends LinearOpMode {
 
             while (opModeIsActive()) {
 
-                slide_tilt_manual_control();
                 compute_omni();
 
                 // Switch between Elbow, Wrist, and Claw when 'Y' is pressed

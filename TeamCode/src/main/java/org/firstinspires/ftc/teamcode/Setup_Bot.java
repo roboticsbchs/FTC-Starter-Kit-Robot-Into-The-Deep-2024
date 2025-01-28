@@ -86,9 +86,9 @@ public class Setup_Bot extends LinearOpMode {
         clawServo = hardwareMap.get(Servo.class, "claw");
 
         // Initialize positions elbow wrist tilt slide
-        pickupPosition = new Position(0.75, 0.9, 570, 1700);
-        drivePosition = new Position(0.75, 0.9, 1500, 250);
-        scorePosition = new Position(0.5, 0.9, 4174, 2240);
+        pickupPosition = new Position(0.85, 0.9, 570, 1700);
+        drivePosition = new Position(0.85, 0.9, 1500, 250);
+        scorePosition = new Position(0.75, 0.9, 4174, 2240);
         startPosition = new Position(0, 0.65, 10, 10);
         // Wait for the game to start
         waitForStart();
@@ -128,7 +128,7 @@ public class Setup_Bot extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotor.Direction.REVERSE);
-
+        updateArm(startPosition);
         while (opModeIsActive()) {
 
             compute_omni();
@@ -136,8 +136,7 @@ public class Setup_Bot extends LinearOpMode {
             // Switch between Elbow, Wrist, and Claw when 'Y' is pressed
             if (gamepad1.y) {
                 currentState = RobotState.STEADY_STATE;
-                currentIndex = (currentIndex + 1) % 2; // Cycle through 0, 1, 2
-                sleep(300); // Add debounce to avoid rapid cycli
+                currentIndex = 0; // Elbow always
             }
             //  state transitions based on gamepad input
             else if (gamepad1.a) {
@@ -169,20 +168,43 @@ public class Setup_Bot extends LinearOpMode {
                     elbow = pickupPosition.elbow;
                     break;
                 case DRIVE_POSITION:
-                    tiltmotorA.setTargetPosition(drivePosition.tilt);
-                    tiltmotorB.setTargetPosition(drivePosition.tilt);
-                    slideMotor.setTargetPosition(drivePosition.slide);
-                    if (tiltmotorA.getCurrentPosition() > 1000){
-                        elbowServo.setPosition(drivePosition.elbow);
-                        wristServo.setPosition(drivePosition.wrist);
-                        wrist = drivePosition.wrist;
-                        elbow = drivePosition.elbow;
+                    // We want to control the decent to drive from score
+                    if (tiltmotorA.getCurrentPosition() > drivePosition.tilt){
+                        elbowServo.setPosition(pickupPosition.elbow);
+                        slideMotor.setTargetPosition(drivePosition.slide);
+                        if (slideMotor.getCurrentPosition()<1000) {
+                            tiltmotorA.setTargetPosition(drivePosition.tilt);
+                            tiltmotorB.setTargetPosition(drivePosition.tilt);
                         }
-
+                    }
+                    else {
+                        tiltmotorA.setTargetPosition(drivePosition.tilt);
+                        tiltmotorB.setTargetPosition(drivePosition.tilt);
+                        slideMotor.setTargetPosition(drivePosition.slide);
+                        if (tiltmotorA.getCurrentPosition() > 1000) {
+                            elbowServo.setPosition(drivePosition.elbow);
+                            wristServo.setPosition(drivePosition.wrist);
+                            wrist = drivePosition.wrist;
+                            elbow = drivePosition.elbow;
+                        }
+                    }
                     break;
                 case SCORE_POSITION:
-                    updateArm(scorePosition);
-                    break;
+                    tiltmotorA.setTargetPosition(scorePosition.tilt);
+                    tiltmotorB.setTargetPosition(scorePosition.tilt);
+                    if (tiltmotorA.getCurrentPosition() > 3500){
+                        slideMotor.setTargetPosition(scorePosition.slide);
+                        if(slideMotor.getCurrentPosition()>2000){
+                            elbowServo.setPosition(scorePosition.elbow);
+                        }
+                        else
+                        {
+                            elbowServo.setPosition(drivePosition.elbow);
+                        }
+                        // wristServo.setPosition(scorePosition.wrist);
+                      // wrist = scorePosition.wrist;
+                        elbow = scorePosition.elbow;
+                    }                    break;
 
                 case START_POSITION:
                     if (tiltmotorA.getCurrentPosition() > 1000) {
@@ -215,10 +237,10 @@ public class Setup_Bot extends LinearOpMode {
     }
 
     private void positioner() {
-
-        // Act on the currently selected double
-        switch (currentIndex) {
-            case 0: // Elbow
+//
+//        // Act on the currently selected double
+//        switch (currentIndex) {
+//            case 0: // Elbow
                 if (gamepad1.left_bumper) {
                     elbow = Math.max(0, elbow - INCREMENT);
                     sleep(200); // Add debounce
@@ -228,18 +250,18 @@ public class Setup_Bot extends LinearOpMode {
                     sleep(200); // Add debounce
                 }
                 elbowServo.setPosition(elbow); // Update servo
-                break;
-            case 1: // Wrist
-                if (gamepad1.left_bumper) {
-                    wrist = Math.max(0, wrist - INCREMENT);
-                    sleep(200); // Add debounce
-                }
-                if (gamepad1.right_bumper) {
-                    wrist = Math.min(1, wrist + INCREMENT);
-                    sleep(200); // Add debounce
-                }
-                wristServo.setPosition(wrist); // Update servo
-                break;
+                //break;
+//            case 1: // Wrist
+//                if (gamepad1.left_bumper) {
+//                    wrist = Math.max(0, wrist - INCREMENT);
+//                    sleep(200); // Add debounce
+//                }
+//                if (gamepad1.right_bumper) {
+//                    wrist = Math.min(1, wrist + INCREMENT);
+//                    sleep(200); // Add debounce
+//                }
+//                wristServo.setPosition(wrist); // Update servo
+//                break;
 //            case 2: // Claw
 //                if (gamepad1.left_bumper) {
 //                    claw = Math.max(0, claw - INCREMENT);
@@ -251,7 +273,7 @@ public class Setup_Bot extends LinearOpMode {
 //                }
 //                clawServo.setPosition(claw); // Update servo
 //                break;
-       }
+//       }
     }
     private void updateArm(Position position) {
         elbowServo.setPosition(position.elbow);
